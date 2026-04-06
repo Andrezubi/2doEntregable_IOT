@@ -47,7 +47,6 @@
             padding: 14px;
         }
 
-        /* Colores más coherentes */
         .green { background: #e6f4ea; border: 1px solid #a5d6a7; }
         .yellow { background: #fff8e1; border: 1px solid #ffe082; }
         .red { background: #ffebee; border: 1px solid #ef9a9a; }
@@ -67,13 +66,30 @@
             margin-bottom: 7px;
             font-size: 13px;
         }
+        
+        .input-con-unidad {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
 
-        input[type="number"] {
+        .input-con-unidad input {
             width: 80px;
             padding: 6px;
             border-radius: 6px;
             border: 1px solid #bbb;
             font-size: 13px;
+
+            /* ✅ números a la derecha */
+            text-align: right;
+        }
+
+        .input-con-unidad span {
+            font-size: 12px;
+
+            /* ✅ cm más oscuro */
+            color: #222;
+            font-weight: 500;
         }
 
         input[type="checkbox"] {
@@ -109,14 +125,23 @@
 
         <div class="grupo green">
             <div class="titulo">Green</div>
+
             <div class="fila">
                 <span>Low:</span>
-                <input id="gLow" type="number" value="2">
+                <div class="input-con-unidad">
+                    <input id="gLow" type="number" value="2">
+                    <span>cm</span>
+                </div>
             </div>
+
             <div class="fila">
                 <span>High:</span>
-                <input id="gHigh" type="number" value="20">
+                <div class="input-con-unidad">
+                    <input id="gHigh" type="number" value="20">
+                    <span>cm</span>
+                </div>
             </div>
+
             <div class="fila">
                 <span>Blink:</span>
                 <input id="gBlink" type="checkbox" checked>
@@ -125,14 +150,23 @@
 
         <div class="grupo yellow">
             <div class="titulo">Yellow</div>
+
             <div class="fila">
                 <span>Low:</span>
-                <input id="yLow" type="number" value="20">
+                <div class="input-con-unidad">
+                    <input id="yLow" type="number" value="20">
+                    <span>cm</span>
+                </div>
             </div>
+
             <div class="fila">
                 <span>High:</span>
-                <input id="yHigh" type="number" value="40">
+                <div class="input-con-unidad">
+                    <input id="yHigh" type="number" value="40">
+                    <span>cm</span>
+                </div>
             </div>
+
             <div class="fila">
                 <span>Blink:</span>
                 <input id="yBlink" type="checkbox" checked>
@@ -141,14 +175,23 @@
 
         <div class="grupo red">
             <div class="titulo">Red</div>
+
             <div class="fila">
                 <span>Low:</span>
-                <input id="rLow" type="number" value="40">
+                <div class="input-con-unidad">
+                    <input id="rLow" type="number" value="40">
+                    <span>cm</span>
+                </div>
             </div>
+
             <div class="fila">
                 <span>High:</span>
-                <input id="rHigh" type="number" value="60">
+                <div class="input-con-unidad">
+                    <input id="rHigh" type="number" value="60">
+                    <span>cm</span>
+                </div>
             </div>
+
             <div class="fila">
                 <span>Blink:</span>
                 <input id="rBlink" type="checkbox">
@@ -157,14 +200,23 @@
 
         <div class="grupo blue">
             <div class="titulo">Blue</div>
+
             <div class="fila">
                 <span>Low:</span>
-                <input id="bLow" type="number" value="60">
+                <div class="input-con-unidad">
+                    <input id="bLow" type="number" value="60">
+                    <span>cm</span>
+                </div>
             </div>
+
             <div class="fila">
                 <span>High:</span>
-                <input id="bHigh" type="number" value="80">
+                <div class="input-con-unidad">
+                    <input id="bHigh" type="number" value="80">
+                    <span>cm</span>
+                </div>
             </div>
+
             <div class="fila">
                 <span>Blink:</span>
                 <input id="bBlink" type="checkbox">
