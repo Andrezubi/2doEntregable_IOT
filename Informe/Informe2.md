@@ -23,28 +23,21 @@ Marzo 2026
 # 1. Requerimientos Funcionales y No Funcionales
 ## Requerimientos Funcionales
 
-- El microcontrolador debe procesar la señal enviada por el sensor ultrasónico y convertirla en una medición de distancia expresada en centímetros.
+- El sistema debe incorporar una arquitectura distribuida compuesta por dos ESP32, uno como cliente sensor y otro como cliente actuador, comunicados a través de un servidor TCP central.
 
-- El sistema debe realizar mediciones de distancia de forma continua mientras el dispositivo esté encendido.
+- El ESP32 sensor debe enviar las mediciones de distancia al servidor mediante comunicación TCP sobre WiFi (IEEE 802.11).
 
-- El sistema debe clasificar la distancia detectada en diferentes rangos definidos por el sistema.
+- El servidor debe recibir, procesar y centralizar los datos enviados por el ESP32 sensor.
 
-  Ejemplo de rangos:
-  - Distancia menor a 40 cm  
-  - Distancia entre 40 cm y 80 cm  
-  - Distancia mayor o igual a 80 cm
+- El servidor debe aplicar una lógica de control sobre los datos recibidos y generar comandos de salida en función de dichos datos.
 
-- El sistema debe encender un LED azul en modo parpadeo cuando la distancia detectada sea mayor a 80 cm.
+- El servidor debe enviar comandos al ESP32 actuador mediante comunicación TCP, siguiendo un protocolo de aplicación definido por el grupo.
 
-- El sistema debe activar un LED rojo en modo parpadeo cuando la distancia detectada este entre 80 y 50 cm.
+- El sistema debe permitir la visualización y configuración de parámetros desde una página web, la cual se comunicará con el servidor.
 
-- El sistema debe activar un LED amarillo en modo parpadeo lento cuando la distancia detectada esté entre 50 cm y 20 cm.
+- La página web debe permitir al usuario enviar parámetros de control al servidor, los cuales influirán en el comportamiento del sistema (por ejemplo, umbrales o modos de operación).
 
-- El sistema debe encender un LED verde de forma constante cuando la distancia detectada sea menor a 20 cm. 
-
-- El sistema debe apagar todos los LEDS cuando el sensor no detecte un objeto.
-
-
+- El sistema debe implementar un protocolo de comunicación estructurado entre cliente–servidor–actuador para el intercambio de mensajes TCP.
 
 ## Requerimientos No Funcionales
 
@@ -63,6 +56,18 @@ Marzo 2026
 - El código debe estar dividido en funciones o módulos que permitan modificar o ampliar el sistema fácilmente.
 
 - El sistema debe permitir modificaciones futuras como agregar nuevos actuadores o sensores.
+
+- Los módulos ESP32 deben conectarse al servidor y operar de manera simultánea sin presentar errores en la comunicación.
+
+- El sistema debe ser capaz de gestionar adecuadamente las desconexiones de los módulos ESP32, permitiendo su reconexión sin afectar el funcionamiento general.
+
+- Los dispositivos ESP32 deben operar únicamente cuando se encuentren conectados a una red WiFi y al servidor correspondiente.
+
+- El sistema debe garantizar una comunicación estable entre los componentes, minimizando la pérdida de datos durante la transmisión.
+
+- El sistema debe mantener tiempos de respuesta adecuados en la comunicación entre cliente, servidor y actuador, asegurando una operación en tiempo casi real.
+
+- El sistema debe ser tolerante a fallos en la red, permitiendo la recuperación automática de la conexión en caso de interrupciones temporales.
 
 # 2. Diseño del Sistema
 
