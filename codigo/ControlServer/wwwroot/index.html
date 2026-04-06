@@ -1,78 +1,226 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>Control de Distancia</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #89f7fe, #66a6ff);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .contenedor {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+            width: 520px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        #mensaje {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .grupo {
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        /* Colores más coherentes */
+        .green { background: #e6f4ea; border: 1px solid #a5d6a7; }
+        .yellow { background: #fff8e1; border: 1px solid #ffe082; }
+        .red { background: #ffebee; border: 1px solid #ef9a9a; }
+        .blue { background: #e3f2fd; border: 1px solid #90caf9; }
+
+        .titulo {
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .fila {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+            font-size: 13px;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            font-size: 13px;
+        }
+
+        input[type="checkbox"] {
+            transform: scale(1.1);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #1976d2;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #125ea9;
+        }
+    </style>
 </head>
-<body style="font-family: Arial; text-align:center;">
+
+<body>
+
+<div class="contenedor">
     <h1>Configuración de Distancias</h1>
 
-    <div id="mensaje" style="font-weight:bold; margin-bottom:20px;"></div>
+    <div id="mensaje"></div>
 
-    Green Low: <input id="gLow" type="number" value="2"><br>
-    Green High: <input id="gHigh" type="number" value="20"><br>
-    Green Blink: <input id="gBlink" type="checkbox" checked><br><br>
+    <div class="grid">
 
-    Yellow Low: <input id="yLow" type="number" value="20"><br>
-    Yellow High: <input id="yHigh" type="number" value="40"><br>
-    Yellow Blink: <input id="yBlink" type="checkbox" checked><br><br>
+        <div class="grupo green">
+            <div class="titulo">Green</div>
+            <div class="fila">
+                <span>Low:</span>
+                <input id="gLow" type="number" value="2">
+            </div>
+            <div class="fila">
+                <span>High:</span>
+                <input id="gHigh" type="number" value="20">
+            </div>
+            <div class="fila">
+                <span>Blink:</span>
+                <input id="gBlink" type="checkbox" checked>
+            </div>
+        </div>
 
-    Red Low: <input id="rLow" type="number" value="40"><br>
-    Red High: <input id="rHigh" type="number" value="60"><br>
-    Red Blink: <input id="rBlink" type="checkbox"><br><br>
+        <div class="grupo yellow">
+            <div class="titulo">Yellow</div>
+            <div class="fila">
+                <span>Low:</span>
+                <input id="yLow" type="number" value="20">
+            </div>
+            <div class="fila">
+                <span>High:</span>
+                <input id="yHigh" type="number" value="40">
+            </div>
+            <div class="fila">
+                <span>Blink:</span>
+                <input id="yBlink" type="checkbox" checked>
+            </div>
+        </div>
 
-    Blue Low: <input id="bLow" type="number" value="60"><br>
-    Blue High: <input id="bHigh" type="number" value="80"><br>
-    Blue Blink: <input id="bBlink" type="checkbox"><br><br>
+        <div class="grupo red">
+            <div class="titulo">Red</div>
+            <div class="fila">
+                <span>Low:</span>
+                <input id="rLow" type="number" value="40">
+            </div>
+            <div class="fila">
+                <span>High:</span>
+                <input id="rHigh" type="number" value="60">
+            </div>
+            <div class="fila">
+                <span>Blink:</span>
+                <input id="rBlink" type="checkbox">
+            </div>
+        </div>
+
+        <div class="grupo blue">
+            <div class="titulo">Blue</div>
+            <div class="fila">
+                <span>Low:</span>
+                <input id="bLow" type="number" value="60">
+            </div>
+            <div class="fila">
+                <span>High:</span>
+                <input id="bHigh" type="number" value="80">
+            </div>
+            <div class="fila">
+                <span>Blink:</span>
+                <input id="bBlink" type="checkbox">
+            </div>
+        </div>
+
+    </div>
 
     <button onclick="send()">Actualizar</button>
+</div>
 
-    <script>
-        async function send() {
+<script>
+async function send() {
 
-            const mensaje = document.getElementById("mensaje");
+    const mensaje = document.getElementById("mensaje");
 
-            // Obtener valores correctamente
-            const gLow = document.getElementById("gLow").value;
-            const gHigh = document.getElementById("gHigh").value;
-            const gBlink = document.getElementById("gBlink").checked;
+    const gLow = document.getElementById("gLow").value;
+    const gHigh = document.getElementById("gHigh").value;
+    const gBlink = document.getElementById("gBlink").checked;
 
-            const yLow = document.getElementById("yLow").value;
-            const yHigh = document.getElementById("yHigh").value;
-            const yBlink = document.getElementById("yBlink").checked;
+    const yLow = document.getElementById("yLow").value;
+    const yHigh = document.getElementById("yHigh").value;
+    const yBlink = document.getElementById("yBlink").checked;
 
-            const rLow = document.getElementById("rLow").value;
-            const rHigh = document.getElementById("rHigh").value;
-            const rBlink = document.getElementById("rBlink").checked;
+    const rLow = document.getElementById("rLow").value;
+    const rHigh = document.getElementById("rHigh").value;
+    const rBlink = document.getElementById("rBlink").checked;
 
-            const bLow = document.getElementById("bLow").value;
-            const bHigh = document.getElementById("bHigh").value;
-            const bBlink = document.getElementById("bBlink").checked;
+    const bLow = document.getElementById("bLow").value;
+    const bHigh = document.getElementById("bHigh").value;
+    const bBlink = document.getElementById("bBlink").checked;
 
-            try {
-                const response = await fetch(`/setConfig?` +
-                    `gLow=${gLow}&gHigh=${gHigh}&gBlink=${gBlink}` +
-                    `&yLow=${yLow}&yHigh=${yHigh}&yBlink=${yBlink}` +
-                    `&rLow=${rLow}&rHigh=${rHigh}&rBlink=${rBlink}` +
-                    `&bLow=${bLow}&bHigh=${bHigh}&bBlink=${bBlink}`
-                );
+    try {
+        const response = await fetch(`/setConfig?` +
+            `gLow=${gLow}&gHigh=${gHigh}&gBlink=${gBlink}` +
+            `&yLow=${yLow}&yHigh=${yHigh}&yBlink=${yBlink}` +
+            `&rLow=${rLow}&rHigh=${rHigh}&rBlink=${rBlink}` +
+            `&bLow=${bLow}&bHigh=${bHigh}&bBlink=${bBlink}`
+        );
 
-                const text = await response.text();
+        const text = await response.text();
 
-                // Mostrar mensaje
-                mensaje.innerText = text;
+        mensaje.innerText = text;
 
-                // Color según resultado
-                if (text.includes("No se puede") || text.includes("debe")) {
-                    mensaje.style.color = "red";
-                } else {
-                    mensaje.style.color = "darkcyan";
-                }
-
-            } catch (error) {
-                mensaje.innerText = "Error de conexión con el servidor";
-                mensaje.style.color = "red";
-            }
+        if (text.includes("No se puede") || text.includes("debe")) {
+            mensaje.style.color = "red";
+        } else {
+            mensaje.style.color = "#2e7d32";
         }
-    </script>
+
+    } catch (error) {
+        mensaje.innerText = "Error de conexión con el servidor";
+        mensaje.style.color = "red";
+    }
+}
+</script>
+
 </body>
 </html>
