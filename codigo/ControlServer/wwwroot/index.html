@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Control de Distancia</title>
+</head>
+<body style="font-family: Arial; text-align:center;">
+    <h1>Configuración de Distancias</h1>
+
+    <div id="mensaje" style="font-weight:bold; margin-bottom:20px;"></div>
+
+    Green Low: <input id="gLow" type="number" value="2"><br>
+    Green High: <input id="gHigh" type="number" value="20"><br>
+    Green Blink: <input id="gBlink" type="checkbox" checked><br><br>
+
+    Yellow Low: <input id="yLow" type="number" value="20"><br>
+    Yellow High: <input id="yHigh" type="number" value="40"><br>
+    Yellow Blink: <input id="yBlink" type="checkbox" checked><br><br>
+
+    Red Low: <input id="rLow" type="number" value="40"><br>
+    Red High: <input id="rHigh" type="number" value="60"><br>
+    Red Blink: <input id="rBlink" type="checkbox"><br><br>
+
+    Blue Low: <input id="bLow" type="number" value="60"><br>
+    Blue High: <input id="bHigh" type="number" value="80"><br>
+    Blue Blink: <input id="bBlink" type="checkbox"><br><br>
+
+    <button onclick="send()">Actualizar</button>
+
+    <script>
+        async function send() {
+
+            const mensaje = document.getElementById("mensaje");
+
+            // Obtener valores correctamente
+            const gLow = document.getElementById("gLow").value;
+            const gHigh = document.getElementById("gHigh").value;
+            const gBlink = document.getElementById("gBlink").checked;
+
+            const yLow = document.getElementById("yLow").value;
+            const yHigh = document.getElementById("yHigh").value;
+            const yBlink = document.getElementById("yBlink").checked;
+
+            const rLow = document.getElementById("rLow").value;
+            const rHigh = document.getElementById("rHigh").value;
+            const rBlink = document.getElementById("rBlink").checked;
+
+            const bLow = document.getElementById("bLow").value;
+            const bHigh = document.getElementById("bHigh").value;
+            const bBlink = document.getElementById("bBlink").checked;
+
+            try {
+                const response = await fetch(`/setConfig?` +
+                    `gLow=${gLow}&gHigh=${gHigh}&gBlink=${gBlink}` +
+                    `&yLow=${yLow}&yHigh=${yHigh}&yBlink=${yBlink}` +
+                    `&rLow=${rLow}&rHigh=${rHigh}&rBlink=${rBlink}` +
+                    `&bLow=${bLow}&bHigh=${bHigh}&bBlink=${bBlink}`
+                );
+
+                const text = await response.text();
+
+                // Mostrar mensaje
+                mensaje.innerText = text;
+
+                // Color según resultado
+                if (text.includes("No se puede") || text.includes("debe")) {
+                    mensaje.style.color = "red";
+                } else {
+                    mensaje.style.color = "darkcyan";
+                }
+
+            } catch (error) {
+                mensaje.innerText = "Error de conexión con el servidor";
+                mensaje.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>
