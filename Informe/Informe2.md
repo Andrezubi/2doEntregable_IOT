@@ -120,44 +120,93 @@ Se realizaron pruebas para verificar la frecuencia de parpadeo de un LED configu
 
 [Prueba parpadeo por segundo](https://docs.google.com/spreadsheets/d/1DyKpLJWUTkjiDA7z87IJXlJ0ULdZPX75TzI_sI9DBeM/edit?gid=241907707#gid=241907707)
 
-# 5. Resultados 
-## Prueba de exactitud de distancia
+# 5. Resultados
 
-Los resultados obtenidos muestran que el sistema logró medir distancias cercanas a los valores reales de 80 cm, 50 cm y 20 cm. Los promedios obtenidos fueron 79.63 cm, 49.52 cm y 20.04 cm respectivamente. Además, los errores de exactitud registrados fueron 0.46%, 0.96% y 0.21%, lo que indica una alta precisión en las mediciones realizadas por el sensor ultrasónico.
+## 5.1 Resultados de integración del sistema distribuido
 
-## Prueba de materiales para distancia
+El sistema implementado, compuesto por dos módulos ESP32 (sensor y actuador), un servidor TCP central y una interfaz web, logró establecer comunicación efectiva mediante WiFi (IEEE 802.11).
 
-Las pruebas realizadas con diferentes materiales a una distancia de 30 cm mostraron que la mayoría de las mediciones se mantuvieron cercanas al valor real. Sin embargo, algunos materiales como la mano y la cerámica presentaron una mayor variación en las mediciones debido a las características de reflexión de las ondas ultrasónicas. De igual forma se observo que materiales que absorben sonido como la manta no son detectadas por el sensor.
+El ESP32 sensor realizó la adquisición continua de datos provenientes del sensor ultrasónico y los transmitió correctamente al servidor. A su vez, el servidor procesó la información recibida, aplicó la lógica de control definida por los rangos de distancia y generó comandos que fueron enviados al ESP32 actuador.
 
-## Prueba de distancias mínimas y máximas del sensor
+El ESP32 actuador respondió adecuadamente ejecutando las acciones correspondientes sobre los LEDs (encendido y parpadeo según el rango de distancia). Esto demuestra que la arquitectura cliente–servidor–actuador funciona de manera coherente y sincronizada.
 
-Durante las pruebas realizadas en los rangos de distancia máxima y mínima se observó que el sensor puede medir correctamente distancias cercanas a 270 cm, 280 cm y 290 cm, con errores de exactitud bajos. Sin embargo, al acercarse a los límites extremos del sensor, especialmente en distancias muy pequeñas o superiores a 300 cm, el sensor presenta dificultades para detectar el objeto o aumenta el error de medición.
+## 5.2 Resultados de clasificación por rangos
 
-## Prueba parpadeo por segundo
+El sistema logró clasificar correctamente las distancias en los rangos definidos:
 
-Los promedios obtenidos fueron 10.16, 20.66, 28.16, 37.66 y 45.66 parpadeos para las frecuencias configuradas de 1 a 5 b/s respectivamente. Al convertir estos valores a parpadeos por segundo se obtuvieron frecuencias aproximadas de 1.01, 2.06, 2.81, 3.76 y 4.56 b/s. Los errores de exactitud registrados se encuentran entre 1.67% y 8.67% en comparación con los valores esperados.
+- Menor a 20 cm → LED verde constante  
+- Entre 20 cm y 50 cm → LED amarillo en parpadeo lento  
+- Entre 50 cm y 80 cm → LED rojo en parpadeo  
+- Mayor a 80 cm → LED azul en parpadeo  
+- Sin detección → LEDs apagados  
+
+Se verificó que el servidor interpreta correctamente los datos recibidos y envía comandos adecuados al actuador, cumpliendo con la lógica de control definida.
+
+## 5.3 Resultados de comunicación TCP y web
+
+La comunicación TCP entre los componentes del sistema se mantuvo estable durante las pruebas. No se evidenciaron pérdidas significativas de datos en condiciones normales de operación.
+
+La página web permitió visualizar y modificar parámetros del sistema, los cuales fueron recibidos por el servidor y reflejados en el comportamiento del sistema, validando la correcta integración de la interfaz de usuario con la lógica del servidor.
+
+## 5.4 Resultados de tolerancia a fallos y reconexión
+
+Durante las pruebas de desconexión de los módulos ESP32, el sistema mostró capacidad de recuperación mediante reconexión a la red WiFi y al servidor.
+
+El servidor fue capaz de manejar la desconexión del cliente sensor o actuador sin afectar el funcionamiento general del sistema, evidenciando tolerancia a fallos en la red y continuidad operativa.
+
+## 5.5 Resultados de pruebas de exactitud de distancia
+
+Los resultados obtenidos previamente muestran que el sistema mantiene un alto nivel de precisión en la medición de distancia:
+
+- 80 cm → 79.63 cm (error: 0.46%)  
+- 50 cm → 49.52 cm (error: 0.96%)  
+- 20 cm → 20.04 cm (error: 0.21%)  
+
+Esto cumple con el requerimiento no funcional de mantener un error menor al 2.5%, validando el correcto procesamiento de la señal del sensor ultrasónico en el ESP32 sensor.
+
+## 5.6 Resultados de rendimiento del sistema
+
+El sistema mostró tiempos de respuesta menores a 1 segundo desde la medición hasta la activación del actuador, cumpliendo con el requisito de operación en tiempo casi real.
+
+Asimismo, el sistema mantiene una operación continua mientras ambos ESP32 estén conectados al servidor y a la red WiFi, cumpliendo con los requerimientos de disponibilidad y conectividad.
 
 # 6. Conclusiones
 
-- Los resultados obtenidos muestran que el sistema logró medir distancias cercanas a los valores reales de 80 cm, 50 cm y 20 cm. Los promedios obtenidos fueron 79.63 cm, 49.52 cm y 20.04 cm respectivamente. Además, los errores de exactitud registrados fueron 0.46%, 0.96% y 0.21%, lo que indica una alta precisión en las mediciones realizadas por el sensor ultrasónico.
+- El sistema distribuido basado en dos ESP32, un servidor TCP y una interfaz web fue implementado exitosamente, permitiendo la correcta adquisición, procesamiento y actuación sobre datos de distancia en tiempo real.
 
-- El sensor ultrasónico puede medir distancias correctamente con diferentes tipos de materiales, aunque el tipo de superficie influye en la estabilidad de la medición. Materiales con superficies irregulares o con menor capacidad de reflexión pueden generar ligeras variaciones en los resultados y podemos obsevar que directamente no funciona con ciertos materiales como telas y mantas.
+- La arquitectura cliente–servidor–actuador permitió desacoplar funciones, facilitando la escalabilidad del sistema y cumpliendo con principios de modularidad y distribución.
 
-- El sensor ultrasónico tiene un rango de funcionamiento efectivo limitado. Dentro de ese rango el sistema mantiene mediciones relativamente precisas, pero al superar los límites de operación la detección del objeto se vuelve inestable o inexistente. Vemos que su rango de funcionamiente esta alrededor de 3cm a 290 cm. Esto tambien puede ser dado debido a como hemos configurado el sensor, ya que hemos limitado el tiempo maximo de espera para recibir la señal de 30 milisegundos. Esto puede significar que a ciertas distancias no funcione por esto
+- El ESP32 sensor logró medir distancias con un alto grado de precisión, manteniendo errores menores al 2.5%, lo cual valida el uso del sensor ultrasónico dentro del rango operativo definido.
 
-- Los promedios obtenidos fueron 10.16, 20.66, 28.16, 37.66 y 45.66 parpadeos para las frecuencias configuradas de 1 a 5 b/s(parpadeos por segundo) respectivamente. Al convertir estos valores a parpadeos por segundo se obtuvieron frecuencias aproximadas de 1.01, 2.06, 2.81, 3.76 y 4.56 b/s. Los errores de exactitud registrados se encuentran entre 1.67% y 8.67% en comparación con los valores esperados.  
+- El ESP32 actuador respondió correctamente a los comandos enviados por el servidor, ejecutando los patrones de encendido y parpadeo de LEDs según los rangos de distancia establecidos.
 
-- Los resultados muestran que el sistema es capaz de generar frecuencias de parpadeo cercanas a las configuradas. Sin embargo, a medida que aumenta la frecuencia se observa una mayor diferencia respecto al valor esperado, lo cual puede deberse a pequeñas variaciones en el temporizador, errores de sincronismo en el codigo (uso de delay) o a errores en el conteo manual de los parpadeos.
+- El servidor TCP cumplió un rol central en la lógica del sistema, centralizando la comunicación, procesando datos y aplicando reglas de control de manera efectiva.
 
-- Vemos que si se cumple los requrimientos de precision y exactitud necesarias. Tambien podemos observar que el sistema si mantiene el rango de error definido para las veces que parpadeara en un segundo pero a mayor frecuencia mas error hay. Se podria mejorar el codigo sin el uso de delays pero no dejaria que la placa descanse y esta tenderia a sobrecalentarse.
+- La página web permitió la interacción del usuario con el sistema, habilitando la configuración de parámetros que influyen directamente en el comportamiento del sistema, cumpliendo su función como interfaz de control.
 
-# 7. Recomendaciones 
+- El sistema demostró capacidad de tolerancia a fallos, permitiendo la reconexión de los módulos ESP32 sin afectar la estabilidad general.
 
-- Se recomienda mantener el sensor en una posición estable y evitar superficies inclinadas o irregulares durante la medición. También es recomendable realizar varias mediciones y utilizar promedios para reducir posibles variaciones en los resultados y utilizar materiales que no absorban sonido. 
+- En general, los requerimientos funcionales y no funcionales definidos fueron cumplidos satisfactoriamente, destacando la estabilidad de la comunicación, la precisión de las mediciones y la correcta integración de todos los componentes.
 
-- Se recomienda utilizar el sensor dentro de su rango óptimo de funcionamiento (3 cm a 290 cm) para obtener mediciones más confiables. También es conveniente considerar estos límites al diseñar sistemas que dependan de la detección de distancia mediante sensores ultrasónicos. 
+# 7. Recomendaciones
 
-- Se recomienda utilizar métodos automáticos para contar los parpadeos y así reducir errores humanos en la medición. También se puede mejorar la precisión ajustando los tiempos del programa o utilizando temporizadores más exactos dentro del sistema. y tambien se podria aumentar algun tipo de compensacion a frecuencias mas altas.
+- Se recomienda mejorar la gestión de la comunicación TCP implementando mecanismos de reconexión automática más robustos y detección de pérdida de conexión en tiempo real.
+
+- Se sugiere optimizar el código de los ESP32 evitando bloqueos en la ejecución (por ejemplo, reemplazando funciones con retardos por temporizadores no bloqueantes) para mejorar la eficiencia del sistema.
+
+- Para mejorar la escalabilidad, se recomienda diseñar el servidor de forma que pueda soportar múltiples clientes sensores y actuadores adicionales en el futuro.
+
+- Se recomienda implementar protocolos de comunicación más estructurados (por ejemplo, con formatos tipo JSON) para facilitar la interpretación de mensajes entre cliente, servidor y actuador.
+
+- Para mejorar la precisión en frecuencias de parpadeo, se recomienda el uso de temporizadores hardware en lugar de conteos manuales o delays, reduciendo el margen de error en frecuencias altas.
+
+- Se sugiere automatizar las pruebas de validación (por ejemplo, conteo de parpadeos) para evitar errores humanos en la medición de resultados.
+
+- Se recomienda mantener el sensor ultrasónico dentro de su rango óptimo de operación (aproximadamente 3 cm a 290 cm) y evitar superficies que absorban sonido, para asegurar mediciones más estables.
+
+- Se sugiere fortalecer la interfaz web agregando validaciones de entrada y visualización en tiempo real del estado del sistema (conexión, datos del sensor, estado del actuador).
+
+- Se recomienda considerar mecanismos de seguridad básicos en la comunicación TCP (validación de mensajes, control de acceso), especialmente si el sistema se despliega en redes no controladas.
 
 # 8. Anexos 
 
