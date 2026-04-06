@@ -78,9 +78,18 @@ Marzo 2026
 ## 2.3 Diagramas estructurales y de comportamiento
 ### 2.3.1 Diagrama de secuencia
 ![Diagrama](Imagenes/diagrama_secuencia.jpeg)
-### 2.3.1 Diagramas uml de clases
+### 2.3.2 Diagramas uml de clases
 ![Diagrama](Imagenes/diagrama_uml.jpeg)
-
+## 2.4 Tabla de Protocolos
+### Lista de comandos y sus descripciones
+| Transmisor        | Receptor                  | Nombre              | Descripción                                                                 | Ejemplos                                      |
+|------------------|---------------------------|---------------------|-----------------------------------------------------------------------------|-----------------------------------------------|
+| U_sensor         | Servidor                  | Registrar (sensor)  | registra que el sensor se conectó al servidor                              | REGISTER: SENSOR                              |
+| U_actuador       | Servidor                  | Registrar (actuator)| registra que el actuador se conectó al servidor                             | REGISTER: ACTUATOR                            |
+| Servidor         | U_sensor, U_actuador      | Ok()                | Cuando el servidor recibe un registro o un ping devuelve un mensaje de Ok   | REGISTER:OK<br>PING:OK                        |
+| U_sensor         | Servidor                  | EnviarDistancia (dist) | Detecta cuando hay un cambio significativo en la distancia o cada cierto tiempo y lo manda al servidor | DISTANCE:40.5                                 |
+| Servidor         | U_actuador                | SetLeds(config)     | El servidor manda que leds deberían prenderse, apagarse y parpadear         | LED_CONFIG: 1,0,2,1<br>(prende led 1 y 4 apaga led 2 y parpadea led 3) |
+| U_actuador, U_sensor | Servidor             | Ping()              | los esp32 mandan una señal de ping para asegurarse de que estén conectados al servidor | PING:SENSOR, PING:ACTUATOR                   |
 # 3. Implementación
 
 ## 3.1 Código fuente documentado
