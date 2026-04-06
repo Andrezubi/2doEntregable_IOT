@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Control de Distancia</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #89f7fe, #66a6ff);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .contenedor {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+            width: 520px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        #mensaje {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .grupo {
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .green { background: #e6f4ea; border: 1px solid #a5d6a7; }
+        .yellow { background: #fff8e1; border: 1px solid #ffe082; }
+        .red { background: #ffebee; border: 1px solid #ef9a9a; }
+        .blue { background: #e3f2fd; border: 1px solid #90caf9; }
+
+        .titulo {
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .fila {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+            font-size: 13px;
+        }
+        
+        .input-con-unidad {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .input-con-unidad input {
+            width: 80px;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            font-size: 13px;
+
+            /* ✅ números a la derecha */
+            text-align: right;
+        }
+
+        .input-con-unidad span {
+            font-size: 12px;
+
+            /* ✅ cm más oscuro */
+            color: #222;
+            font-weight: 500;
+        }
+
+        input[type="checkbox"] {
+            transform: scale(1.1);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #1976d2;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #125ea9;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="contenedor">
+    <h1>Configuración de Distancias</h1>
+
+    <div id="mensaje"></div>
+
+    <div class="grid">
+
+        <div class="grupo green">
+            <div class="titulo">Green</div>
+
+            <div class="fila">
+                <span>Low:</span>
+                <div class="input-con-unidad">
+                    <input id="gLow" type="number" value="2">
+                    <span>cm</span>
+                </div>
+            </div>
+
+            <div class="fila">
+                <span>High:</span>
+                <div class="input-con-unidad">
+                    <input id="gHigh" type="number" value="20">
+                    <span>cm</span>
+                </div>
+            </div>
+
+            <div class="fila">
+                <span>Blink:</span>
+                <input id="gBlink" type="checkbox" checked>
+            </div>
+        </div>
+
+        <div class="grupo yellow">
+            <div class="titulo">Yellow</div>
+
+            <div class="fila">
+                <span>Low:</span>
+                <div class="input-con-unidad">
+                    <input id="yLow" type="number" value="20">
+                    <span>cm</span>
+                </div>
+            </div>
+
+            <div class="fila">
+                <span>High:</span>
+                <div class="input-con-unidad">
+                    <input id="yHigh" type="number" value="40">
+                    <span>cm</span>
+                </div>
+            </div>
+
+            <div class="fila">
+                <span>Blink:</span>
+                <input id="yBlink" type="checkbox" checked>
+            </div>
+        </div>
+
+        <div class="grupo red">
+            <div class="titulo">Red</div>
+
+            <div class="fila">
+                <span>Low:</span>
+                <div class="input-con-unidad">
+                    <input id="rLow" type="number" value="40">
+                    <span>cm</span>
+                </div>
+            </div>
+
+            <div class="fila">
+                <span>High:</span>
+                <div class="input-con-unidad">
+                    <input id="rHigh" type="number" value="60">
+                    <span>cm</span>
+                </div>
+            </div>
+
+            <div class="fila">
+                <span>Blink:</span>
+                <input id="rBlink" type="checkbox">
+            </div>
+        </div>
+
+        <div class="grupo blue">
+            <div class="titulo">Blue</div>
+
+            <div class="fila">
+                <span>Low:</span>
+                <div class="input-con-unidad">
+                    <input id="bLow" type="number" value="60">
+                    <span>cm</span>
+                </div>
+            </div>
+
+            <div class="fila">
+                <span>High:</span>
+                <div class="input-con-unidad">
+                    <input id="bHigh" type="number" value="80">
+                    <span>cm</span>
+                </div>
+            </div>
+
+            <div class="fila">
+                <span>Blink:</span>
+                <input id="bBlink" type="checkbox">
+            </div>
+        </div>
+
+    </div>
+
+    <button onclick="send()">Actualizar</button>
+</div>
+
+<script>
+async function send() {
+
+    const mensaje = document.getElementById("mensaje");
+
+    const gLow = document.getElementById("gLow").value;
+    const gHigh = document.getElementById("gHigh").value;
+    const gBlink = document.getElementById("gBlink").checked;
+
+    const yLow = document.getElementById("yLow").value;
+    const yHigh = document.getElementById("yHigh").value;
+    const yBlink = document.getElementById("yBlink").checked;
+
+    const rLow = document.getElementById("rLow").value;
+    const rHigh = document.getElementById("rHigh").value;
+    const rBlink = document.getElementById("rBlink").checked;
+
+    const bLow = document.getElementById("bLow").value;
+    const bHigh = document.getElementById("bHigh").value;
+    const bBlink = document.getElementById("bBlink").checked;
+
+    try {
+        const response = await fetch(`/setConfig?` +
+            `gLow=${gLow}&gHigh=${gHigh}&gBlink=${gBlink}` +
+            `&yLow=${yLow}&yHigh=${yHigh}&yBlink=${yBlink}` +
+            `&rLow=${rLow}&rHigh=${rHigh}&rBlink=${rBlink}` +
+            `&bLow=${bLow}&bHigh=${bHigh}&bBlink=${bBlink}`
+        );
+
+        const text = await response.text();
+
+        mensaje.innerText = text;
+
+        if (text.includes("No se puede") || text.includes("debe")) {
+            mensaje.style.color = "red";
+        } else {
+            mensaje.style.color = "#2e7d32";
+        }
+
+    } catch (error) {
+        mensaje.innerText = "Error de conexión con el servidor";
+        mensaje.style.color = "red";
+    }
+}
+</script>
+
+</body>
+</html>
