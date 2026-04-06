@@ -85,7 +85,7 @@ Marzo 2026
 
 ## 3.1 Código fuente documentado
 
-[Enlace a GitHub] https://github.com/Andrezubi/ProyectosESP32-IoT-Vargas-Zubieta/tree/main/Project1/main
+[Enlace a GitHub] https://github.com/Andrezubi/2doEntregable_IOT/tree/AndresZubieta
 
 # 4. Pruebas y Validaciones
 ## Prueba de exactitud de distancia
