@@ -10,6 +10,10 @@ app.UseStaticFiles();
 var deviceManager = new DeviceManager();
 var zoneService = new ZoneService();
 var tcpServer = new TcpServer(deviceManager, zoneService);
+string hostName = Dns.GetHostName();
+IPHostEntry ipEntry = Dns.GetHostEntry(hostName);
+var localIp = ipEntry.AddressList.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+Console.WriteLine($"Local IP: {localIp}");
 
 _ = tcpServer.Start();
 
@@ -18,7 +22,7 @@ _ = Task.Run(async () =>
 {
     while (true)
     {
-        deviceManager.Cleanup(100);
+        deviceManager.Cleanup(10);
         await Task.Delay(2000);
     }
 });

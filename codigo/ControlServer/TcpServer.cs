@@ -1,7 +1,8 @@
 using System.Net;
 using System.Net.Sockets;
-using System.Collections.Concurrent;
+using System.Text;
 using System.Globalization;
+
 class TcpServer
 {
     private DeviceManager deviceManager;
@@ -18,6 +19,8 @@ class TcpServer
         TcpListener server = new TcpListener(IPAddress.Any, 5000);
         server.Start();
 
+        Console.WriteLine("Server started...");
+
         while (true)
         {
             var client = await server.AcceptTcpClientAsync();
@@ -27,51 +30,128 @@ class TcpServer
 
     private async Task HandleClient(TcpClient client)
     {
-        var reader = new StreamReader(client.GetStream());
-        var writer = new StreamWriter(client.GetStream()) { AutoFlush = true };
+        Console.WriteLine("Client connected");
+
+        var stream = client.GetStream();
+
+
+        var writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
+
+
+        byte[] buffer = new byte[1024];
+        string dataBuffer = "";
 
         string? deviceId = null;
 
-        while (true)
+        try
         {
-            var msg = await reader.ReadLineAsync();
-            if (msg == null) break;
-
-            if (msg.StartsWith("REGISTER:"))
+            while (true)
             {
-                deviceId = msg.Split(':')[1];
-                deviceManager.Register(deviceId, client);
-                await writer.WriteLineAsync("REGISTER:OK");
-                Console.WriteLine($"Registro {deviceId}");
-                if (deviceId == "ACTUATOR")
+
+                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+
+                if (bytesRead == 0)
                 {
-                    await writer.WriteLineAsync(zoneService.GetCommand());
+                    Console.WriteLine("Client disconnected");
+                    break;
                 }
-            }
 
-            if (msg.StartsWith("DISTANCE:"))
-            {
-                var input = msg.Split(":")[1];
 
-                if (float.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out float dist))
+                dataBuffer += Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+                int newlineIndex;
+
+
+                while ((newlineIndex = dataBuffer.IndexOf('\n')) != -1)
                 {
-                    Console.WriteLine(dist);
-                    if (zoneService.Update(dist))
+                    string msg = dataBuffer.Substring(0, newlineIndex).Trim();
+                    dataBuffer = dataBuffer.Substring(newlineIndex + 1);
+
+                    if (string.IsNullOrEmpty(msg)) continue;
+
+                    Console.WriteLine($"RX: {msg}");
+
+                    // =========================
+                    // MESSAGE HANDLING
+                    // =========================
+
+                    if (msg.StartsWith("REGISTER:"))
                     {
-                        if (deviceManager.TryGet("ACTUATOR", out var act))
+
+                        var parts = msg.Split(':');
+                        if (parts.Length >= 2)
                         {
-                            var w = new StreamWriter(act.GetStream()) { AutoFlush = true };
-                            await w.WriteLineAsync(zoneService.GetCommand());
+                            deviceId = parts[1];
+
+                            deviceManager.Register(deviceId, client);
+
+                            await writer.WriteLineAsync("REGISTER:OK");
+
+                            Console.WriteLine($"Registro {deviceId}");
+
+                            if (deviceId == "ACTUATOR")
+                            {
+                                await writer.WriteLineAsync(zoneService.GetCommand());
+                            }
+                        }
+                    }
+
+                    else if (msg.StartsWith("DISTANCE:"))
+                    {
+                        var parts = msg.Split(':');
+
+                        if (parts.Length >= 2)
+                        {
+                            var input = parts[1];
+
+                            if (float.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out float dist))
+                            {
+                                Console.WriteLine($"Distance: {dist}");
+
+                                if (zoneService.Update(dist))
+                                {
+                                    Console.WriteLine($"newConfig {zoneService.GetCommand()}");
+                                    if (deviceManager.TryGet("ACTUATOR", out var act))
+                                    {
+
+                                        if (deviceManager.TryGet("ACTUATOR", out _, out var actWriter))
+                                        {
+                                            await actWriter.WriteLineAsync(zoneService.GetCommand());
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Parse error DISTANCE");
+                            }
+                        }
+                    }
+
+                    else if (msg.StartsWith("PING:"))
+                    {
+                        var parts = msg.Split(':');
+
+                        if (parts.Length >= 2)
+                        {
+                            var pingId = parts[1];
+
+                            deviceManager.UpdatePing(pingId);
+
+                            await writer.WriteLineAsync("PING:OK");
                         }
                     }
                 }
             }
-            if (msg.StartsWith("PING:")){
-                deviceId = msg.Split(":")[1];
-                deviceManager.UpdatePing(deviceId);
-                await writer.WriteLineAsync("PING:OK");
-
-            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Client error: {ex.Message}");
+        }
+        finally
+        {
+            client.Close();
+            Console.WriteLine("Client closed");
         }
     }
 }
