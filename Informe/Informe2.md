@@ -51,7 +51,6 @@ Marzo 2026
 
 - Se debe determinar la distancias maximas y minimas para el funcionamiento preciso y exacto del sensor.
 
-- El sistema debe dejar que el usuario defina la cantidad de veces que parpadea por segundo, y esto debe tener un error menor al 10%
 
 - El código debe estar dividido en funciones o módulos que permitan modificar o ampliar el sistema fácilmente.
 
@@ -139,31 +138,20 @@ El ESP32 sensor realizó la adquisición continua de datos provenientes del sens
 
 El ESP32 actuador respondió adecuadamente ejecutando las acciones correspondientes sobre los LEDs (encendido y parpadeo según el rango de distancia). Esto demuestra que la arquitectura cliente–servidor–actuador funciona de manera coherente y sincronizada.
 
-## 5.2 Resultados de clasificación por rangos
 
-El sistema logró clasificar correctamente las distancias en los rangos definidos:
-
-- Menor a 20 cm → LED verde constante  
-- Entre 20 cm y 50 cm → LED amarillo en parpadeo lento  
-- Entre 50 cm y 80 cm → LED rojo en parpadeo  
-- Mayor a 80 cm → LED azul en parpadeo  
-- Sin detección → LEDs apagados  
-
-Se verificó que el servidor interpreta correctamente los datos recibidos y envía comandos adecuados al actuador, cumpliendo con la lógica de control definida.
-
-## 5.3 Resultados de comunicación TCP y web
+## 5.2 Resultados de comunicación TCP y web
 
 La comunicación TCP entre los componentes del sistema se mantuvo estable durante las pruebas. No se evidenciaron pérdidas significativas de datos en condiciones normales de operación.
 
 La página web permitió visualizar y modificar parámetros del sistema, los cuales fueron recibidos por el servidor y reflejados en el comportamiento del sistema, validando la correcta integración de la interfaz de usuario con la lógica del servidor.
 
-## 5.4 Resultados de tolerancia a fallos y reconexión
+## 5.3 Resultados de tolerancia a fallos y reconexión
 
 Durante las pruebas de desconexión de los módulos ESP32, el sistema mostró capacidad de recuperación mediante reconexión a la red WiFi y al servidor.
 
 El servidor fue capaz de manejar la desconexión del cliente sensor o actuador sin afectar el funcionamiento general del sistema, evidenciando tolerancia a fallos en la red y continuidad operativa.
 
-## 5.5 Resultados de pruebas de exactitud de distancia
+## 5.4 Resultados de pruebas de exactitud de distancia
 
 Los resultados obtenidos previamente muestran que el sistema mantiene un alto nivel de precisión en la medición de distancia:
 
@@ -173,7 +161,7 @@ Los resultados obtenidos previamente muestran que el sistema mantiene un alto ni
 
 Esto cumple con el requerimiento no funcional de mantener un error menor al 2.5%, validando el correcto procesamiento de la señal del sensor ultrasónico en el ESP32 sensor.
 
-## 5.6 Resultados de rendimiento del sistema
+## 5.5 Resultados de rendimiento del sistema
 
 El sistema mostró tiempos de respuesta menores a 1 segundo desde la medición hasta la activación del actuador, cumpliendo con el requisito de operación en tiempo casi real.
 

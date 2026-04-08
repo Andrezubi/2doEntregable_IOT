@@ -1,10 +1,10 @@
 #include <WiFi.h>
 #include "LED.h"
 
-const char* ssid = "Flia.zubieta_s";
-const char* password = "Zubieta1234";
+const char* ssid = "POCO X3 NFC";
+const char* password = "pikachu48";
 
-const char* host = "192.168.1.13"; // IP de tu servidor
+const char* host = "10.213.53.21"; // IP de tu servidor
 const int port = 5000;
 
 LED blueLED(16);
@@ -19,32 +19,7 @@ const unsigned long pingInterval = 2000; // 2 seconds
 unsigned long lastPongTime = 0;
 const unsigned long pongTimeout = 6000; // si no hay PONG en 6s, reconectar
 
-void handleHeartbeat() {
-  // Leer respuestas del servidor (PING:OK, etc.)
-  while (client.available()) {
-    String line = client.readStringUntil('\n');
-    line.trim();
-    if (line == "PING:OK") {
-      lastPongTime = millis();
-      Serial.println("PONG recibido");
-    }
-  }
 
-  // Enviar PING periódico
-  if (millis() - lastPing >= pingInterval) {
-    if (client.connected()) {
-      client.println("PING:SENSOR");
-    }
-    lastPing = millis();
-  }
-
-  // ✅ Detectar servidor muerto por timeout de PONG
-  if (lastPongTime > 0 && millis() - lastPongTime > pongTimeout) {
-    Serial.println("Servidor no responde, forzando reconexión...");
-    client.stop();
-    lastPongTime = 0;
-  }
-}
 
 
 unsigned long lastWiFiAttempt = 0;
@@ -104,27 +79,40 @@ void handleIncoming() {
   while (client.available()) {
     String msg = client.readStringUntil('\n');
     msg.trim();
-
     if (msg.length() == 0) continue;
 
-    Serial.println( msg);
+    Serial.println(msg);
 
-    if (msg.startsWith("LED_CONFIG:")) {
+    if (msg == "PING:OK") {
+      lastPongTime = millis();
+      Serial.println("PONG recibido");
+    }
+    else if (msg.startsWith("LED_CONFIG:")) {
       String data = msg.substring(11);
-
       int g, y, r, b;
-
       if (sscanf(data.c_str(), "%d,%d,%d,%d", &g, &y, &r, &b) == 4) {
         turnOffAllLEDS();
-
         applyState(greenLED, g);
         applyState(yellowLED, y);
         applyState(redLED, r);
         applyState(blueLED, b);
       } else {
-        Serial.println(" Error parsing LED_CONFIG");
+        Serial.println("Error parsing LED_CONFIG");
       }
     }
+  }
+
+  // Send PING (keep this separate, it's not a read operation)
+  if (millis() - lastPing >= pingInterval) {
+    if (client.connected()) client.println("PING:ACTUATOR");
+    lastPing = millis();
+  }
+
+  // Pong timeout check
+  if (lastPongTime > 0 && millis() - lastPongTime > pongTimeout) {
+    Serial.println("Servidor no responde, forzando reconexión...");
+    client.stop();
+    lastPongTime = 0;
   }
 }
 
@@ -160,7 +148,6 @@ void setup() {
 
 void loop() {
   ensureConnection();
-  handleHeartbeat();
   handleIncoming();
   updateAllLEDS();
   delay(20);

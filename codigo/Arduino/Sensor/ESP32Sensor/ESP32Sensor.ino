@@ -1,11 +1,12 @@
 #include <WiFi.h>
 #include "SonarSensor.h"
 
-const char* ssid = "Flia.zubieta_s";
-const char* password = "Zubieta1234";
+const char* ssid = "POCO X3 NFC";
+const char* password = "pikachu48";
 
-const char* host = "192.168.1.13"; // IP de tu servidor
+const char* host = "10.213.53.21"; // IP de tu servidor
 const int port = 5000;
+
 SonarSensor sonar(26, 27);
 
 WiFiClient client;
